@@ -1,9 +1,9 @@
 ﻿/* 
  * Angelo Ellis
  * CST - 250
- * April 27 2026
+ * May 3 2026
  * Minesweeper
- * Milestone 1
+ * Milestone 2
  */
 
 using MinesweeperClassLibrary.Models;
@@ -22,33 +22,124 @@ namespace MinesweeperConsoleApp
             // Create the board service object
             BoardService boardService = new BoardService();
 
-            // Create a size 10 board
-            BoardModel boardSizeTen = boardService.CreateBoard(10);
-            boardSizeTen.Difficulty = 1;
+            // Create one game board
+            BoardModel board = boardService.CreateBoard(10);
+            board.Difficulty = 1;
 
-            // Set up bombs and count nearby bombs for size 10 board
-            boardService.SetupBombs(boardSizeTen, boardSizeTen.Difficulty);
-            boardService.CountBombsNearby(boardSizeTen);
+            // Set up bombs and count nearby bombs
+            boardService.SetupBombs(board, board.Difficulty);
+            boardService.CountBombsNearby(board);
 
-            // Print the size 10 board
-            Console.WriteLine("Minesweeper Board Size 10");
-            PrintAnswers(boardSizeTen);
+            // Set one special reward cell for testing
+            board.Cells[1, 1].HasSpecialReward = true;
+
+            // Show answer key first for testing
+            Console.WriteLine("Hello, welcome to Minesweeper");
+            Console.WriteLine("Here is the answer key for the first board");
+            PrintAnswers(board);
+
+            Console.WriteLine();
+            Console.WriteLine("Here is the current board");
+            PrintBoard(board);
+
+            // Declare game loop variables
+            bool victory = false;
+            bool death = false;
+
+            // Repeat until the game is over
+            while (!victory && !death)
+            {
+                int row, col, choice;
+
+                // Row input
+                Console.Write("Enter the row number: ");
+                while (!int.TryParse(Console.ReadLine(), out row) || row < 0 || row >= board.Size)
+                {
+                    Console.WriteLine("Invalid row. Try again.");
+                    Console.Write("Enter the row number: ");
+                }
+
+                // Column input
+                Console.Write("Enter the column number: ");
+                while (!int.TryParse(Console.ReadLine(), out col) || col < 0 || col >= board.Size)
+                {
+                    Console.WriteLine("Invalid column. Try again.");
+                    Console.Write("Enter the column number: ");
+                }
+
+                // Choice input
+                Console.Write("Enter 1 to visit, 2 to flag, 3 to use a reward: ");
+                while (!int.TryParse(Console.ReadLine(), out choice) || choice < 1 || choice > 3)
+                {
+                    Console.WriteLine("Invalid choice. Try again.");
+                    Console.Write("Enter 1 to visit, 2 to flag, 3 to use a reward: ");
+                }
+
+                CellModel cell = board.Cells[row, col];
+
+                if (choice == 1)
+                {
+                    cell.IsVisited = true;
+
+                    if (cell.HasSpecialReward)
+                    {
+                        board.RewardsRemaining++;
+                        cell.HasSpecialReward = false;
+                        Console.WriteLine("You found a reward!");
+                    }
+                }
+                else if (choice == 2)
+                {
+                    cell.IsFlagged = true;
+                }
+                else if (choice == 3)
+                {
+                    if (board.RewardsRemaining > 0)
+                    {
+                        board.RewardsRemaining--;
+
+                        if (cell.IsBomb)
+                        {
+                            Console.WriteLine("Reward used: This cell has a bomb.");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Reward used: This cell is safe.");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("You do not have any rewards to use.");
+                    }
+                }
+
+                string gameState = boardService.DetermineGameState(board);
+
+                if (gameState == "Won")
+                {
+                    victory = true;
+                }
+                else if (gameState == "Lost")
+                {
+                    death = true;
+                }
+
+                Console.WriteLine();
+                Console.WriteLine("Here is the current board");
+                PrintBoard(board);
+            }
 
             Console.WriteLine();
 
-            // Create a size 15 board
-            BoardModel boardSizeFifteen = boardService.CreateBoard(15);
-            boardSizeFifteen.Difficulty = 2;
+            if (victory)
+            {
+                Console.WriteLine("Congratulations, you won!");
+            }
+            else if (death)
+            {
+                Console.WriteLine("Game over. You hit a bomb.");
+            }
 
-            // Set up bombs and count nearby bombs for size 15 board
-            boardService.SetupBombs(boardSizeFifteen, boardSizeFifteen.Difficulty);
-            boardService.CountBombsNearby(boardSizeFifteen);
-
-            // Print the size 15 board
-            Console.WriteLine("Minesweeper Board Size 15");
-            PrintAnswers(boardSizeFifteen);
-
-            // Keep the console window open
             Console.ReadLine();
         }
 
@@ -113,5 +204,73 @@ namespace MinesweeperConsoleApp
                 Console.WriteLine();
             }
         }
+
+        /// <summary>
+        /// Print the current game board for the player
+        /// </summary>
+        /// <param name="board"></param>
+        static void PrintBoard(BoardModel board)
+        {
+            // Print column numbers
+            Console.Write("    ");
+            for (int col = 0; col < board.Size; col++)
+            {
+                Console.Write($"{col,3}");
+            }
+
+            Console.WriteLine();
+
+            // Print divider line
+            Console.Write("    ");
+            for (int col = 0; col < board.Size; col++)
+            {
+                Console.Write("---");
+            }
+
+            Console.WriteLine();
+
+            // Loop through each row
+            for (int row = 0; row < board.Size; row++)
+            {
+                // Print row number
+                Console.Write($"{row,2} |");
+
+                // Loop through each column
+                for (int col = 0; col < board.Size; col++)
+                {
+                    CellModel cell = board.Cells[row, col];
+
+                    if (cell.IsFlagged)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.Write(" F ");
+                    }
+                    else if (!cell.IsVisited)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.Write(" ? ");
+                    }
+                    else if (cell.IsBomb)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.Write(" B ");
+                    }
+                    else if (cell.NumberOfBombNeighbors == 0)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.Write(" . ");
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        Console.Write($" {cell.NumberOfBombNeighbors} ");
+                    }
+
+                    Console.ResetColor();
+                }
+
+                Console.WriteLine();
+            }
+        } // End of PrintBoard method
     }
 }

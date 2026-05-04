@@ -1,9 +1,9 @@
 ﻿/* 
  * Angelo Ellis
  * CST - 250
- * April 27 2026
+ * May 3 2026
  * Minesweeper
- * Milestone 1
+ * Milestone 2
  */
 
 using System;
@@ -121,5 +121,48 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
                 }
             }
         }
+
+        /// <summary>
+        /// Determine if the player won, lost, or is still playing
+        /// </summary>
+        /// <param name="board"></param>
+        /// <returns></returns>
+        public string DetermineGameState(BoardModel board)
+        {
+            bool safeCellsRemain = false;
+
+            // Loop through every cell on the board
+            for (int row = 0; row < board.Size; row++)
+            {
+                for (int col = 0; col < board.Size; col++)
+                {
+                    CellModel cell = board.Cells[row, col];
+
+                    // If a bomb cell was visited, the player loses
+                    if (cell.IsBomb && cell.IsVisited)
+                    {
+                        board.GameState = "Lost";
+                        return "Lost";
+                    }
+
+                    // Check if there are still safe cells left to visit
+                    if (!cell.IsBomb && !cell.IsVisited)
+                    {
+                        safeCellsRemain = true;
+                    }
+                }
+            }
+
+            // If any safe cells remain, the game continues
+            if (safeCellsRemain)
+            {
+                board.GameState = "StillPlaying";
+                return "StillPlaying";
+            }
+
+            // If all safe cells are visited, the player wins
+            board.GameState = "Won";
+            return "Won";
+        } // End of DetermineGameState method
     }
 }

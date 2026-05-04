@@ -1,9 +1,9 @@
 ﻿/* 
  * Angelo Ellis
  * CST - 250
- * April 27 2026
+ * May 3 2026
  * Minesweeper
- * Milestone 1
+ * Milestone 2
  */
 
 using System;
