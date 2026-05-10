@@ -114,5 +114,19 @@ namespace MinesweeperClassLibrary.Tests
             // Assert
             Assert.Equal("StillPlaying", result);
         }
+
+        [Fact]
+        public void FloodFill_ShouldVisitEmptyCells()
+        {
+            // Arrange
+            BoardService boardService = new BoardService();
+            BoardModel board = boardService.CreateBoard(5);
+
+            // Act
+            boardService.FloodFill(board, 0, 0);
+
+            // Assert
+            Assert.True(board.Cells[0, 0].IsVisited);
+        }
     }
 }
