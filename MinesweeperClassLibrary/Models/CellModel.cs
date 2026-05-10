@@ -12,7 +12,7 @@ using System.Text;
 
 namespace MinesweeperClassLibrary.Models
 {
-    public class CellModel
+    public class CellModel : BaseModel
     {
         // Row position of the cell
         public int Row { get; set; }

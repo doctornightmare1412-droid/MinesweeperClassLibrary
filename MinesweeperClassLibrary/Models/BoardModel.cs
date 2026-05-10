@@ -12,7 +12,7 @@ using System.Text;
 
 namespace MinesweeperClassLibrary.Models
 {
-    public class BoardModel
+    public class BoardModel : BaseModel
     {
         // Size of the board
         public int Size { get; set; }
