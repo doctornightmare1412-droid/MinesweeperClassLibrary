@@ -1,9 +1,9 @@
-﻿/* 
+﻿/*
  * Angelo Ellis
  * CST - 250
- * May 3 2026
+ * May 10 2026
  * Minesweeper
- * Milestone 2
+ * Milestone 3
  */
 
 using System;
@@ -13,7 +13,7 @@ using MinesweeperClassLibrary.Models;
 
 namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
 {
-    public class BoardService
+    public class BoardService : IBoardService
     {
         /// <summary>
         /// Creates and initializes the board
@@ -164,5 +164,60 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
             board.GameState = "Won";
             return "Won";
         } // End of DetermineGameState method
+
+        /// <summary>
+        /// Recursively reveals empty cells and nearby neighbors
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        public void FloodFill(BoardModel board, int row, int col)
+        {
+            // Check if row or column is outside the board
+            if (row < 0 || row >= board.Size || col < 0 || col >= board.Size)
+            {
+                return;
+            }
+
+            // Get the current cell
+            CellModel cell = board.Cells[row, col];
+
+            // Stop if the cell was already visited
+            if (cell.IsVisited)
+            {
+                return;
+            }
+
+            // Stop if the cell is flagged
+            if (cell.IsFlagged)
+            {
+                return;
+            }
+
+            // Stop if the cell is a bomb
+            if (cell.IsBomb)
+            {
+                return;
+            }
+
+            // Visit the current cell
+            cell.IsVisited = true;
+
+            // Stop recursion if neighboring bombs exist
+            if (cell.NumberOfBombNeighbors > 0)
+            {
+                return;
+            }
+
+            // Recursive calls in all 8 directions
+            FloodFill(board, row - 1, col);     // North
+            FloodFill(board, row + 1, col);     // South
+            FloodFill(board, row, col - 1);     // West
+            FloodFill(board, row, col + 1);     // East
+            FloodFill(board, row - 1, col - 1); // Northwest
+            FloodFill(board, row - 1, col + 1); // Northeast
+            FloodFill(board, row + 1, col - 1); // Southwest
+            FloodFill(board, row + 1, col + 1); // Southeast
+        }
     }
 }
