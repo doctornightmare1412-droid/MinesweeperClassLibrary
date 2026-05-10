@@ -79,7 +79,15 @@ namespace MinesweeperConsoleApp
 
                 if (choice == 1)
                 {
-                    cell.IsVisited = true;
+                    // If the cell has zero bomb neighbors, use flood fill
+                    if (!cell.IsBomb && cell.NumberOfBombNeighbors == 0)
+                    {
+                        boardService.FloodFill(board, row, col);
+                    }
+                    else
+                    {
+                        cell.IsVisited = true;
+                    }
 
                     if (cell.HasSpecialReward)
                     {
