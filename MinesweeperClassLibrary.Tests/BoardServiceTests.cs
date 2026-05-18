@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 10 2026
+ * May 16 2026
  * Minesweeper
- * Milestone 3
+ * Milestone 4
  */
 
 using MinesweeperClassLibrary.Models;
@@ -113,6 +113,36 @@ namespace MinesweeperClassLibrary.Tests
 
             // Assert
             Assert.Equal("StillPlaying", result);
+        }
+
+        [Fact]
+        public void DetermineGameState_ShouldReturnWon_WhenAllSafeCellsAreVisitedOrFlagged()
+        {
+            // Arrange
+            BoardService boardService = new BoardService();
+            BoardModel board = boardService.CreateBoard(3);
+
+            board.Cells[0, 0].IsBomb = true;
+
+            for (int row = 0; row < board.Size; row++)
+            {
+                for (int col = 0; col < board.Size; col++)
+                {
+                    if (!board.Cells[row, col].IsBomb)
+                    {
+                        board.Cells[row, col].IsVisited = true;
+                    }
+                }
+            }
+
+            board.Cells[1, 1].IsVisited = false;
+            board.Cells[1, 1].IsFlagged = true;
+
+            // Act
+            string result = boardService.DetermineGameState(board);
+
+            // Assert
+            Assert.Equal("Won", result);
         }
 
         [Fact]

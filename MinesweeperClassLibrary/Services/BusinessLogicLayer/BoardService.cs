@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 10 2026
+ * May 16 2026
  * Minesweeper
- * Milestone 3
+ * Milestone 4
  */
 
 using System;
@@ -54,7 +54,17 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
         {
             Random rand = new Random();
 
-            int bombsToPlace = difficulty * 5;
+            int bombsToPlace = board.Size * board.Size * difficulty / 100;
+
+            if (bombsToPlace < 1)
+            {
+                bombsToPlace = 1;
+            }
+
+            if (bombsToPlace >= board.Size * board.Size)
+            {
+                bombsToPlace = board.Size * board.Size - 1;
+            }
 
             int size = board.Size;
 
@@ -145,8 +155,8 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
                         return "Lost";
                     }
 
-                    // Check if there are still safe cells left to visit
-                    if (!cell.IsBomb && !cell.IsVisited)
+                    // Check if there are still safe cells left to visit or correctly flag
+                    if (!cell.IsBomb && !cell.IsVisited && !cell.IsFlagged)
                     {
                         safeCellsRemain = true;
                     }
