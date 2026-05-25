@@ -1,9 +1,9 @@
 /*
  * Angelo Ellis
  * CST - 250
- * May 16 2026
+ * May 24 2026
  * Minesweeper
- * Milestone 4
+ * Milestone 5
  */
 
 using System;
@@ -12,6 +12,8 @@ using MinesweeperClassLibrary.Models;
 using MinesweeperClassLibrary.Services.BusinessLogicLayer;
 using System.Drawing;
 using System.IO;
+using System.Collections.Generic;
+using MinesweeperClassLibrary.Services.DataAccessLayer;
 
 
 namespace MinesweeperGUI
@@ -33,6 +35,12 @@ namespace MinesweeperGUI
 
         // Tracks reward mode
         private bool usingReward = false;
+
+        // Stores high score records during the game
+        private List<GameStat> highScores = new List<GameStat>();
+
+        // Handles saving and loading high scores
+        private GameStatDAO gameStatDAO = new GameStatDAO();
 
         // Game images
         private Image tileImage;
@@ -229,6 +237,42 @@ namespace MinesweeperGUI
             if (gameState == "Won")
             {
                 lblStatus.Text = "Status: You won!";
+
+                PlayerNameForm playerNameForm = new PlayerNameForm();
+
+                if (playerNameForm.ShowDialog() == DialogResult.OK)
+                {
+                    
+                    GameStat stat = new GameStat();
+
+                    highScores = gameStatDAO.LoadScores();
+                    stat.Id = highScores.Count + 1;
+                    stat.Name = playerNameForm.PlayerName;
+                    stat.Score = score;
+                    stat.GameTime = DateTime.Now;
+                    stat.TimeInSeconds = (int)(DateTime.Now - board.StartTime).TotalSeconds;
+
+                    // Add time bonus points
+                    if (stat.TimeInSeconds < 10)
+                    {
+                        stat.Score += 100;
+                    }
+                    else if (stat.TimeInSeconds < 30)
+                    {
+                        stat.Score += 75;
+                    }
+                    else if (stat.TimeInSeconds < 60)
+                    {
+                        stat.Score += 50;
+                    }
+
+                    highScores.Add(stat);
+                    gameStatDAO.SaveScores(highScores);
+
+                    HighScoresForm highScoresForm = new HighScoresForm(highScores);
+                    highScoresForm.ShowDialog();
+                }
+
                 MessageBox.Show("Congratulations, you won!");
             }
             else if (gameState == "Lost")

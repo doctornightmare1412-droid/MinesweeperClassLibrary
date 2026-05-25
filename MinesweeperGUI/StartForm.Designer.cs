@@ -1,4 +1,12 @@
-﻿namespace MinesweeperGUI
+﻿/*
+ * Angelo Ellis
+ * CST - 250
+ * May 24 2026
+ * Minesweeper
+ * Milestone 5
+ */
+
+namespace MinesweeperGUI
 {
     partial class StartForm
     {
@@ -34,6 +42,7 @@
             trackBarDifficulty = new TrackBar();
             trackBarSize = new TrackBar();
             btnPlay = new Button();
+            btnHighScores = new Button();
             ((System.ComponentModel.ISupportInitialize)trackBarDifficulty).BeginInit();
             ((System.ComponentModel.ISupportInitialize)trackBarSize).BeginInit();
             SuspendLayout();
@@ -97,11 +106,22 @@
             btnPlay.UseVisualStyleBackColor = true;
             btnPlay.Click += btnPlay_Click;
             // 
+            // btnHighScores
+            // 
+            btnHighScores.Location = new Point(577, 26);
+            btnHighScores.Name = "btnHighScores";
+            btnHighScores.Size = new Size(150, 46);
+            btnHighScores.TabIndex = 6;
+            btnHighScores.Text = "High Scores";
+            btnHighScores.UseVisualStyleBackColor = true;
+            btnHighScores.Click += btnHighScores_Click;
+            // 
             // StartForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(800, 450);
+            Controls.Add(btnHighScores);
             Controls.Add(btnPlay);
             Controls.Add(trackBarSize);
             Controls.Add(trackBarDifficulty);
@@ -125,5 +145,6 @@
         private TrackBar trackBarDifficulty;
         private TrackBar trackBarSize;
         private Button btnPlay;
+        private Button btnHighScores;
     }
 }

@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 16 2026
+ * May 24 2026
  * Minesweeper
- * Milestone 4
+ * Milestone 5
  */
 
 using System;
@@ -52,6 +52,15 @@ namespace MinesweeperGUI
             gameForm.Show();
 
             this.Hide();
+        }
+
+        /// <summary>
+        /// Opens the high scores form
+        /// </summary>
+        private void btnHighScores_Click(object sender, EventArgs e)
+        {
+            HighScoresForm highScoresForm = new HighScoresForm();
+            highScoresForm.ShowDialog();
         }
     }
 }
