@@ -158,5 +158,47 @@ namespace MinesweeperClassLibrary.Tests
             // Assert
             Assert.True(board.Cells[0, 0].IsVisited);
         }
+
+        [Fact]
+        public void UseBombDefuseReward_ShouldRemoveBombAndVisitCell()
+        {
+            // Arrange
+            BoardService boardService = new BoardService();
+            BoardModel board = boardService.CreateBoard(3);
+
+            board.RewardsRemaining = 1;
+            board.Cells[1, 1].IsBomb = true;
+
+            boardService.CountBombsNearby(board);
+
+            // Act
+            string result = boardService.UseBombDefuseReward(board, 1, 1);
+
+            // Assert
+            Assert.Equal("Bomb defused! This cell is now safe.", result);
+            Assert.False(board.Cells[1, 1].IsBomb);
+            Assert.True(board.Cells[1, 1].IsVisited);
+            Assert.Equal(0, board.RewardsRemaining);
+        }
+
+        [Fact]
+        public void UseBombDefuseReward_ShouldRevealSafeCell()
+        {
+            // Arrange
+            BoardService boardService = new BoardService();
+            BoardModel board = boardService.CreateBoard(3);
+
+            board.RewardsRemaining = 1;
+
+            boardService.CountBombsNearby(board);
+
+            // Act
+            string result = boardService.UseBombDefuseReward(board, 0, 0);
+
+            // Assert
+            Assert.Equal("Reward used. Safe cell revealed.", result);
+            Assert.True(board.Cells[0, 0].IsVisited);
+            Assert.Equal(0, board.RewardsRemaining);
+        }
     }
 }

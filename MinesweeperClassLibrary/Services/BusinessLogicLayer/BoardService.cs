@@ -41,6 +41,7 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
                     board.Cells[row, col].IsFlagged = false;
                     board.Cells[row, col].NumberOfBombNeighbors = 0;
                     board.Cells[row, col].HasSpecialReward = false;
+                    board.Cells[row, col].WasDefused = false;
                 }
             }
 
@@ -228,6 +229,78 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
             FloodFill(board, row - 1, col + 1); // Northeast
             FloodFill(board, row + 1, col - 1); // Southwest
             FloodFill(board, row + 1, col + 1); // Southeast
+        }
+
+        /// <summary>
+        /// Uses a bomb defuse reward on the selected cell
+        /// </summary>
+        /// <param name="board"></param>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        /// <returns></returns>
+        public string UseBombDefuseReward(BoardModel board, int row, int col)
+        {
+            // Make sure the selected cell is inside the board
+            if (row < 0 || row >= board.Size || col < 0 || col >= board.Size)
+            {
+                return "Invalid cell selected.";
+            }
+
+            CellModel cell = board.Cells[row, col];
+
+            // Do not waste the reward on a revealed cell
+            if (cell.IsVisited)
+            {
+                return "This cell is already revealed.";
+            }
+
+            // Do not use the reward on a flagged cell
+            if (cell.IsFlagged)
+            {
+                return "Remove the flag before using a reward.";
+            }
+
+            // Make sure the player has a reward
+            if (board.RewardsRemaining <= 0)
+            {
+                return "No rewards available.";
+            }
+
+            // Use one reward
+            board.RewardsRemaining--;
+
+            if (cell.IsBomb)
+            {
+                cell.IsBomb = false;
+                cell.IsVisited = true;
+                cell.HasSpecialReward = false;
+                cell.WasDefused = true;
+
+                // Recalculate nearby bomb numbers after removing the bomb
+                CountBombsNearby(board);
+
+                return "Bomb defused! Bonus points earned.";
+            }
+
+            // If the cell is safe and empty, reveal connected safe cells
+            if (cell.NumberOfBombNeighbors == 0)
+            {
+                FloodFill(board, row, col);
+            }
+            else
+            {
+                cell.IsVisited = true;
+            }
+
+            // Collect a reward if the safe cell had one
+            if (cell.HasSpecialReward)
+            {
+                board.RewardsRemaining++;
+                cell.HasSpecialReward = false;
+                return "Reward used. Safe cell revealed and another reward was found.";
+            }
+
+            return "Reward used. Safe cell revealed.";
         }
     }
 }

@@ -47,6 +47,7 @@ namespace MinesweeperGUI
         private Image flatTileImage;
         private Image skullImage;
         private Image rewardImage;
+        private Image defusedBombImage;
         private Image[] numberImages = new Image[9];
 
         public GameForm()
@@ -102,6 +103,7 @@ namespace MinesweeperGUI
             flatTileImage = Image.FromFile(Path.Combine(imageFolder, "Tile Flat.png"));
             skullImage = Image.FromFile(Path.Combine(imageFolder, "Skull.png"));
             rewardImage = Image.FromFile(Path.Combine(imageFolder, "Gold.png"));
+            defusedBombImage = Image.FromFile(Path.Combine(imageFolder, "defusedbomb.png"));
 
             for (int i = 1; i <= 8; i++)
             {
@@ -178,30 +180,25 @@ namespace MinesweeperGUI
             Button button = (Button)sender;
             CellModel cell = (CellModel)button.Tag;
 
-            // Use reward mode
+            // Use Bomb Defuse Kit reward mode
             if (usingReward)
             {
-                if (board.RewardsRemaining > 0)
-                {
-                    board.RewardsRemaining--;
+                string rewardMessage = boardService.UseBombDefuseReward(board, cell.Row, cell.Column);
 
-                    if (cell.IsBomb)
-                    {
-                        MessageBox.Show("Reward used: This cell has a bomb.");
-                    }
-                    else
-                    {
-                        MessageBox.Show("Reward used: This cell is safe.");
-                    }
+                lblRewards.Text = "Rewards: " + board.RewardsRemaining;
 
-                    lblRewards.Text = "Rewards: " + board.RewardsRemaining;
+                usingReward = false;
 
-                    usingReward = false;
+                lblStatus.Text = "Status: Playing";
 
-                    lblStatus.Text = "Status: Playing";
+                UpdateButtonFaces();
+                UpdateScore();
 
-                    return;
-                }
+                MessageBox.Show(rewardMessage);
+
+                CheckGameStateAfterMove();
+
+                return;
             }
 
             // Visit the selected cell
@@ -225,13 +222,21 @@ namespace MinesweeperGUI
 
                     lblRewards.Text = "Rewards: " + board.RewardsRemaining;
 
-                    MessageBox.Show("You found a reward!");
+                    MessageBox.Show("You found a Bomb Defuse Kit!");
                 }
             }
 
             UpdateButtonFaces();
             UpdateScore();
 
+            CheckGameStateAfterMove();
+        }
+
+        /// <summary>
+        /// Checks if the player won, lost, or should continue after a move
+        /// </summary>
+        private void CheckGameStateAfterMove()
+        {
             string gameState = boardService.DetermineGameState(board);
 
             if (gameState == "Won")
@@ -242,7 +247,6 @@ namespace MinesweeperGUI
 
                 if (playerNameForm.ShowDialog() == DialogResult.OK)
                 {
-                    
                     GameStat stat = new GameStat();
 
                     highScores = gameStatDAO.LoadScores();
@@ -286,6 +290,7 @@ namespace MinesweeperGUI
                 lblStatus.Text = "Status: Playing";
             }
         }
+
 
         /// <summary>
         /// Handles right-click flagging
@@ -343,6 +348,11 @@ namespace MinesweeperGUI
                     button.BackgroundImage = tileImage;
                     button.BackColor = Color.Gray;
                 }
+                else if (cell.WasDefused)
+                {
+                    button.BackgroundImage = defusedBombImage;
+                    button.BackColor = Color.LightGray;
+                }
                 else if (cell.IsBomb)
                 {
                     button.BackgroundImage = skullImage;
@@ -351,11 +361,6 @@ namespace MinesweeperGUI
                 else if (cell.HasSpecialReward)
                 {
                     button.BackgroundImage = rewardImage;
-                    button.BackColor = Color.LightGray;
-                }
-                else if (cell.NumberOfBombNeighbors == 0)
-                {
-                    button.BackgroundImage = flatTileImage;
                     button.BackColor = Color.LightGray;
                 }
                 else
@@ -382,6 +387,11 @@ namespace MinesweeperGUI
                     if (cell.IsVisited && !cell.IsBomb)
                     {
                         score += 10;
+                    }
+
+                    if (cell.WasDefused)
+                    {
+                        score += 50;
                     }
                 }
             }
@@ -417,7 +427,7 @@ namespace MinesweeperGUI
             {
                 usingReward = true;
 
-                lblStatus.Text = "Status: Select a cell to reveal";
+                lblStatus.Text = "Status: Select a cell to defuse or reveal";
             }
             else
             {

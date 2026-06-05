@@ -92,18 +92,18 @@ namespace MinesweeperGUI
             // 
             // btnUseReward
             // 
-            btnUseReward.Location = new Point(438, 606);
+            btnUseReward.Location = new Point(399, 606);
             btnUseReward.Name = "btnUseReward";
-            btnUseReward.Size = new Size(150, 46);
+            btnUseReward.Size = new Size(189, 46);
             btnUseReward.TabIndex = 5;
-            btnUseReward.Text = "Use Reward";
+            btnUseReward.Text = "Use Defuse Kit";
             btnUseReward.UseVisualStyleBackColor = true;
             btnUseReward.Click += btnUseReward_Click;
             // 
             // lblRewards
             // 
             lblRewards.AutoSize = true;
-            lblRewards.Location = new Point(306, 613);
+            lblRewards.Location = new Point(264, 613);
             lblRewards.Name = "lblRewards";
             lblRewards.Size = new Size(126, 32);
             lblRewards.TabIndex = 6;

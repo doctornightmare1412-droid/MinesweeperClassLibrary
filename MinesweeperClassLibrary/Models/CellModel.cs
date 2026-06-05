@@ -34,5 +34,8 @@ namespace MinesweeperClassLibrary.Models
 
         // Shows if this cell has a special reward
         public bool HasSpecialReward { get; set; }
+
+        // Shows if this bomb was defused by a reward
+        public bool WasDefused { get; set; }
     }
 }

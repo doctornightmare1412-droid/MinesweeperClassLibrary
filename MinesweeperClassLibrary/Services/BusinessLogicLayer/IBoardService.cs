@@ -24,5 +24,7 @@ namespace MinesweeperClassLibrary.Services.BusinessLogicLayer
         string DetermineGameState(BoardModel board);
 
         void FloodFill(BoardModel board, int row, int col);
+
+        string UseBombDefuseReward(BoardModel board, int row, int col);
     }
 }
