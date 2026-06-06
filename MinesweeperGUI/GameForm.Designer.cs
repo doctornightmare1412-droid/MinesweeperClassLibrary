@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 24 2026
+ * June 6 2026
  * Minesweeper
- * Milestone 5
+ * Milestone 6
  */
 
 namespace MinesweeperGUI
@@ -43,6 +43,7 @@ namespace MinesweeperGUI
             btnRestart = new Button();
             btnUseReward = new Button();
             lblRewards = new Label();
+            lblBombCountdown = new Label();
             SuspendLayout();
             // 
             // panelBoard
@@ -109,11 +110,21 @@ namespace MinesweeperGUI
             lblRewards.TabIndex = 6;
             lblRewards.Text = "Rewards: 0";
             // 
+            // lblBombCountdown
+            // 
+            lblBombCountdown.AutoSize = true;
+            lblBombCountdown.Location = new Point(198, 552);
+            lblBombCountdown.Name = "lblBombCountdown";
+            lblBombCountdown.Size = new Size(390, 32);
+            lblBombCountdown.TabIndex = 7;
+            lblBombCountdown.Text = "Warning: Bombs Detonate In: 05:00";
+            // 
             // GameForm
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1110, 777);
+            Controls.Add(lblBombCountdown);
             Controls.Add(lblRewards);
             Controls.Add(btnUseReward);
             Controls.Add(btnRestart);
@@ -137,5 +148,6 @@ namespace MinesweeperGUI
         private Label lblStatus;
         private Button btnUseReward;
         private Label lblRewards;
+        private Label lblBombCountdown;
     }
 }

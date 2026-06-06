@@ -1,9 +1,9 @@
 /*
  * Angelo Ellis
  * CST - 250
- * May 24 2026
+ * June 6 2026
  * Minesweeper
- * Milestone 5
+ * Milestone 6
  */
 
 using System;
@@ -35,6 +35,15 @@ namespace MinesweeperGUI
 
         // Tracks reward mode
         private bool usingReward = false;
+
+        // Tracks if the game has ended
+        private bool gameOver = false;
+
+        // Timer for the game clock and bomb countdown
+        private System.Windows.Forms.Timer gameTimer = new System.Windows.Forms.Timer();
+
+        // Bomb countdown starts at 5 minutes
+        private int bombCountdownSeconds = 300;
 
         // Stores high score records during the game
         private List<GameStat> highScores = new List<GameStat>();
@@ -80,7 +89,8 @@ namespace MinesweeperGUI
             PlaceRandomRewards();
 
             // Update labels
-            lblStartTime.Text = "Start Time: " + DateTime.Now.ToShortTimeString();
+            lblStartTime.Text = "Time: 00:00";
+            lblBombCountdown.Text = "Warning: Bombs Detonate In: 05:00";
             lblScore.Text = "Score: 0";
             lblStatus.Text = "Status: Playing";
             lblRewards.Text = "Rewards: " + board.RewardsRemaining;
@@ -90,6 +100,70 @@ namespace MinesweeperGUI
             CreateButtons();
             UpdateButtonFaces();
 
+            // Start the game timer and bomb countdown
+            gameTimer.Interval = 1000;
+            gameTimer.Tick += GameTimer_Tick;
+            gameTimer.Start();
+
+        }
+
+        /// <summary>
+        /// Formats seconds as minutes and seconds
+        /// </summary>
+        private string FormatTime(int totalSeconds)
+        {
+            int minutes = totalSeconds / 60;
+            int seconds = totalSeconds % 60;
+
+            return minutes.ToString("00") + ":" + seconds.ToString("00");
+        }
+
+        /// <summary>
+        /// Updates the visible game time and bomb countdown labels
+        /// </summary>
+        private void UpdateTimerDisplay()
+        {
+            int elapsedSeconds = (int)(DateTime.Now - board.StartTime).TotalSeconds;
+
+            lblStartTime.Text = "Time: " + FormatTime(elapsedSeconds);
+            lblBombCountdown.Text = "Warning: Bombs Detonate In: " + FormatTime(bombCountdownSeconds);
+        }
+
+        /// <summary>
+        /// Runs every second to update the timer and bomb countdown
+        /// </summary>
+        private void GameTimer_Tick(object sender, EventArgs e)
+        {
+            if (gameOver)
+            {
+                gameTimer.Stop();
+                return;
+            }
+
+            bombCountdownSeconds--;
+
+            if (bombCountdownSeconds < 0)
+            {
+                bombCountdownSeconds = 0;
+            }
+
+            UpdateTimerDisplay();
+
+            if (bombCountdownSeconds <= 30 && bombCountdownSeconds > 0)
+            {
+                lblStatus.Text = "Status: Warning! Bombs are about to detonate!";
+            }
+
+            if (bombCountdownSeconds == 0)
+            {
+                gameOver = true;
+                gameTimer.Stop();
+
+                lblStatus.Text = "Status: Time is up!";
+                RevealAllBombs();
+
+                MessageBox.Show("Time is up! The bombs detonated.");
+            }
         }
 
         /// <summary>
@@ -177,6 +251,11 @@ namespace MinesweeperGUI
         /// </summary>
         private void Button_Click(object sender, EventArgs e)
         {
+            if (gameOver)
+            {
+                return;
+            }
+
             Button button = (Button)sender;
             CellModel cell = (CellModel)button.Tag;
 
@@ -241,6 +320,9 @@ namespace MinesweeperGUI
 
             if (gameState == "Won")
             {
+                gameOver = true;
+                gameTimer.Stop();
+
                 lblStatus.Text = "Status: You won!";
 
                 PlayerNameForm playerNameForm = new PlayerNameForm();
@@ -281,6 +363,9 @@ namespace MinesweeperGUI
             }
             else if (gameState == "Lost")
             {
+                gameOver = true;
+                gameTimer.Stop();
+
                 lblStatus.Text = "Status: You lost!";
                 RevealAllBombs();
                 MessageBox.Show("Game over. You hit a bomb.");
@@ -297,6 +382,11 @@ namespace MinesweeperGUI
         /// </summary>
         private void Button_MouseDown(object sender, MouseEventArgs e)
         {
+            if (gameOver)
+            {
+                return;
+            }
+
             Button button = (Button)sender;
             CellModel cell = (CellModel)button.Tag;
 

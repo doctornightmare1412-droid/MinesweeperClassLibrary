@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 24 2026
+ * June 6 2026
  * Minesweeper
- * Milestone 5
+ * Milestone 6
  */
 
 using MinesweeperClassLibrary.Models;
@@ -175,9 +175,10 @@ namespace MinesweeperClassLibrary.Tests
             string result = boardService.UseBombDefuseReward(board, 1, 1);
 
             // Assert
-            Assert.Equal("Bomb defused! This cell is now safe.", result);
+            Assert.Equal("Bomb defused! Bonus points earned.", result);
             Assert.False(board.Cells[1, 1].IsBomb);
             Assert.True(board.Cells[1, 1].IsVisited);
+            Assert.True(board.Cells[1, 1].WasDefused);
             Assert.Equal(0, board.RewardsRemaining);
         }
 

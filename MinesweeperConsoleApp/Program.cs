@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 24 2026
+ * June 6 2026
  * Minesweeper
- * Milestone 5
+ * Milestone 6
  */
 
 using MinesweeperClassLibrary.Models;

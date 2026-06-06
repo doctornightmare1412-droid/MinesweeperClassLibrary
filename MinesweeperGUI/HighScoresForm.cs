@@ -1,9 +1,9 @@
 ﻿/*
  * Angelo Ellis
  * CST - 250
- * May 24 2026
+ * June 6 2026
  * Minesweeper
- * Milestone 5
+ * Milestone 6
  */
 
 using System;
@@ -15,6 +15,7 @@ using System.Text;
 using System.Windows.Forms;
 using MinesweeperClassLibrary.Models;
 using MinesweeperClassLibrary.Services.DataAccessLayer;
+using MinesweeperClassLibrary.Services.BusinessLogicLayer;
 
 namespace MinesweeperGUI
 {
@@ -26,9 +27,22 @@ namespace MinesweeperGUI
         // Data access object for saving and loading high scores
         private GameStatDAO gameStatDAO = new GameStatDAO();
 
+        // Business logic service used to calculate summary statistics
+        private GameStatService gameStatService = new GameStatService();
+
+        // Summary stat controls
+        private Panel summaryPanel;
+        private Label lblTotalGames;
+        private Label lblAverageScore;
+        private Label lblAverageTime;
+        private Label lblHighestScore;
+        private Label lblBestPlayer;
+
         public HighScoresForm()
         {
             InitializeComponent();
+
+            SetupSummaryPanel();
 
             highScores = gameStatDAO.LoadScores();
             DisplayScores();
@@ -38,8 +52,77 @@ namespace MinesweeperGUI
         {
             InitializeComponent();
 
+            SetupSummaryPanel();
+
             highScores = scores;
             DisplayScores();
+        }
+
+        /// <summary>
+        /// Creates the summary panel used for enhanced statistics
+        /// </summary>
+        private void SetupSummaryPanel()
+        {
+            summaryPanel = new Panel();
+            summaryPanel.Dock = DockStyle.Bottom;
+            summaryPanel.Height = 150;
+            summaryPanel.Padding = new Padding(10);
+            summaryPanel.BackColor = Color.LightGray;
+
+            lblTotalGames = new Label();
+            lblTotalGames.AutoSize = true;
+            lblTotalGames.Location = new Point(15, 15);
+
+            lblAverageScore = new Label();
+            lblAverageScore.AutoSize = true;
+            lblAverageScore.Location = new Point(15, 45);
+
+            lblAverageTime = new Label();
+            lblAverageTime.AutoSize = true;
+            lblAverageTime.Location = new Point(15, 75);
+
+            lblHighestScore = new Label();
+            lblHighestScore.AutoSize = true;
+            lblHighestScore.Location = new Point(350, 15);
+
+            lblBestPlayer = new Label();
+            lblBestPlayer.AutoSize = true;
+            lblBestPlayer.Location = new Point(350, 45);
+
+            summaryPanel.Controls.Add(lblTotalGames);
+            summaryPanel.Controls.Add(lblAverageScore);
+            summaryPanel.Controls.Add(lblAverageTime);
+            summaryPanel.Controls.Add(lblHighestScore);
+            summaryPanel.Controls.Add(lblBestPlayer);
+
+            Controls.Add(summaryPanel);
+        }
+
+        /// <summary>
+        /// Displays summary statistics under the high score table
+        /// </summary>
+        private void DisplaySummaryStats()
+        {
+            GameStatSummary summary = gameStatService.CalculateSummary(highScores);
+
+            lblTotalGames.Text = "Total Games Played: " + summary.TotalGamesPlayed;
+            lblAverageScore.Text = "Average Score: " + summary.AverageScore.ToString("0.00");
+            lblAverageTime.Text = "Average Time: " + FormatTime((int)summary.AverageTimeInSeconds);
+            lblHighestScore.Text = "Highest Score: " + summary.HighestScore;
+            lblBestPlayer.Text = "Best Player: " + summary.BestPlayerName;
+        }
+
+        /// <summary>
+        /// Formats time in seconds to a MM:SS format for display
+        /// </summary>
+        /// <param name="totalSeconds"></param>
+        /// <returns></returns>
+        private string FormatTime(int totalSeconds)
+        {
+            int minutes = totalSeconds / 60;
+            int seconds = totalSeconds % 60;
+
+            return minutes.ToString("00") + ":" + seconds.ToString("00");
         }
 
         /// <summary>
@@ -65,10 +148,15 @@ namespace MinesweeperGUI
             dgvHighScores.Columns["Id"].DisplayIndex = 0;
             dgvHighScores.Columns["Name"].DisplayIndex = 1;
             dgvHighScores.Columns["Score"].DisplayIndex = 2;
-            dgvHighScores.Columns["TimeInSeconds"].HeaderText = "Time";
-            dgvHighScores.Columns["TimeInSeconds"].DisplayIndex = 3;
+            dgvHighScores.Columns["TimeInSeconds"].Visible = false;
+
+            dgvHighScores.Columns["FormattedTime"].HeaderText = "Time";
+            dgvHighScores.Columns["FormattedTime"].DisplayIndex = 3;
+
             dgvHighScores.Columns["GameTime"].HeaderText = "Date Played";
             dgvHighScores.Columns["GameTime"].DisplayIndex = 4;
+
+            DisplaySummaryStats();
         }
 
         /// <summary>

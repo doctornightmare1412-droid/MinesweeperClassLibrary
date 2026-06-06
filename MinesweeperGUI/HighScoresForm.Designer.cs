@@ -60,7 +60,7 @@ namespace MinesweeperGUI
             dgvHighScores.Name = "dgvHighScores";
             dgvHighScores.ReadOnly = true;
             dgvHighScores.RowHeadersWidth = 82;
-            dgvHighScores.Size = new Size(1050, 392);
+            dgvHighScores.Size = new Size(1104, 719);
             dgvHighScores.TabIndex = 0;
             // 
             // menuStrip1
@@ -69,7 +69,7 @@ namespace MinesweeperGUI
             menuStrip1.Items.AddRange(new ToolStripItem[] { saveToolStripMenuItem, sortToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
-            menuStrip1.Size = new Size(1050, 40);
+            menuStrip1.Size = new Size(1104, 40);
             menuStrip1.TabIndex = 1;
             menuStrip1.Text = "menuStrip1";
             // 
@@ -111,21 +111,21 @@ namespace MinesweeperGUI
             // byNameToolStripMenuItem
             // 
             byNameToolStripMenuItem.Name = "byNameToolStripMenuItem";
-            byNameToolStripMenuItem.Size = new Size(359, 44);
+            byNameToolStripMenuItem.Size = new Size(244, 44);
             byNameToolStripMenuItem.Text = "By Name";
             byNameToolStripMenuItem.Click += byNameToolStripMenuItem_Click;
             // 
             // byScoreToolStripMenuItem
             // 
             byScoreToolStripMenuItem.Name = "byScoreToolStripMenuItem";
-            byScoreToolStripMenuItem.Size = new Size(359, 44);
+            byScoreToolStripMenuItem.Size = new Size(244, 44);
             byScoreToolStripMenuItem.Text = "By Score";
             byScoreToolStripMenuItem.Click += byScoreToolStripMenuItem_Click;
             // 
             // byDateToolStripMenuItem
             // 
             byDateToolStripMenuItem.Name = "byDateToolStripMenuItem";
-            byDateToolStripMenuItem.Size = new Size(359, 44);
+            byDateToolStripMenuItem.Size = new Size(244, 44);
             byDateToolStripMenuItem.Text = "By Date";
             byDateToolStripMenuItem.Click += byDateToolStripMenuItem_Click;
             // 
@@ -133,7 +133,7 @@ namespace MinesweeperGUI
             // 
             AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1050, 432);
+            ClientSize = new Size(1104, 759);
             Controls.Add(dgvHighScores);
             Controls.Add(menuStrip1);
             MainMenuStrip = menuStrip1;
